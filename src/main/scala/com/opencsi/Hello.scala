@@ -4,9 +4,6 @@ import com.typesafe.config.ConfigFactory
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FileStatus, FileSystem, Path}
 
-import scala.util.matching.Regex
-
-
 /**
   * Created by asyd on 09/01/17.
   */
@@ -19,13 +16,14 @@ object Hello {
     val settings = new Settings(config)
 
     println("===== HDFS Settings =====")
-    println("hdfs.url      " + settings.hdfsURL)
-    println("hdfs.security " + settings.hdfsSecurity)
+    println("\thdfs.url       " + settings.hdfsURL)
+    println("\thdfs.security  " + settings.hdfsSecurity)
 
     if(settings.hdfsSecurity == "kerberos") {
-      println("hdfs.keytab   " + settings.hdfsKeytab)
+      println("\t\thdfs.keytab    " + settings.hdfsKeytab)
+      println("\t\thdfs.principal " + settings.hdfsPrincipal)
     } else {
-      println("hdfs.user     " + settings.hdfsUser)
+      println("\t\thdfs.user      " + settings.hdfsUser)
       System.setProperty("HADOOP_USER_NAME", settings.hdfsUser)
     }
 
@@ -35,17 +33,18 @@ object Hello {
     val hdfs = FileSystem.get(hdfsConfiguration)
     try {
       def printEntry(entry: FileStatus): Unit = {
-        entry.isDirectory match {
-          case true => print("d")
-          case false => print("-")
-        }
+        if (entry.isDirectory)
+          print("d")
+        else
+          print("-")
         print(entry.getPermission + " ")
         print(entry.getOwner + " ")
         print(entry.getGroup + " ")
         print(entry.getPath.toString.replaceFirst(s"^${settings.hdfsURL}/", ""))
         println()
       }
-      hdfs.listStatus(new Path("/")).foreach((x: FileStatus) => printEntry(x))
+      val path = new Path("/")
+      hdfs.listStatus(path).foreach((x: FileStatus) => printEntry(x))
     } catch {
       case e: Exception => println(e)
     }
