@@ -31,7 +31,7 @@ class CommandCommon {}
 
 @Parameters(commandDescription =  "List directory content")
 class CommandLs {
-  @Parameter(required = True)
+  @Parameter(required = true)
   val path:String = "/"
 }
 
