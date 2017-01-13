@@ -1,4 +1,4 @@
-package com.opencsi
+package io.kensu
 
 import com.typesafe.config.Config
 
