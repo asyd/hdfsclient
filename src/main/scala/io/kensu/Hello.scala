@@ -13,7 +13,7 @@ object Hello {
   def main(args: Array[String]) {
     println(args.mkString(", "))
     var hdfsClient = new HDFSClient(args)
-//    var jCommander = new JCommander(new HelloParameters, Array[String]():_*)
+    // Don't ask me why, but new JCommander(new HelloParameters) doesn't work
     var jCommander = new JCommander
     jCommander.addObject(new HelloParameters)
 
