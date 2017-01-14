@@ -1,5 +1,6 @@
 package io.kensu
 
+import java.io.File
 import com.beust.jcommander.{JCommander, Parameter, ParameterException, Parameters}
 import com.typesafe.config.ConfigFactory
 import org.apache.hadoop.conf.Configuration
@@ -11,7 +12,6 @@ import org.apache.hadoop.fs.{FileStatus, FileSystem, Path}
 
 object Hello {
   def main(args: Array[String]) {
-    println(args.mkString(", "))
     var hdfsClient = new HDFSClient(args)
     // Don't ask me why, but new JCommander(new HelloParameters) doesn't work
     var jCommander = new JCommander
@@ -45,7 +45,7 @@ class CommandFind {}
 class HDFSClient(args: Array[String]) {
   // See http://stackoverflow.com/questions/35779151/merging-multiple-typesafe-config-files-and-resolving-only-after-they-are-all-mer
   val defaultConfig = ConfigFactory.parseResources("defaults.conf")
-  val siteConfig = ConfigFactory.load()
+  val siteConfig = ConfigFactory.parseFile(new File(sys.env("HOME") + "/.config/hdfsclient.conf"))
   val config = siteConfig.withFallback(defaultConfig).resolve()
   val settings = new Settings(config)
 
