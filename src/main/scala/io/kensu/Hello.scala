@@ -8,10 +8,14 @@ import org.apache.hadoop.fs.{FileStatus, FileSystem, Path}
 /**
   * Created by asyd on 09/01/17.
   */
+
 object Hello {
   def main(args: Array[String]) {
-    val hdfsClient = new HDFSClient(args)
-    val jCommander = new JCommander(new HelloParameters, Array[String]():_*)
+    println(args.mkString(", "))
+    var hdfsClient = new HDFSClient(args)
+//    var jCommander = new JCommander(new HelloParameters, Array[String]():_*)
+    var jCommander = new JCommander
+    jCommander.addObject(new HelloParameters)
 
     try {
       jCommander.parse(args:_*)
