@@ -1,0 +1,97 @@
+package io.kensu
+
+import com.beust.jcommander.{JCommander, Parameter, ParameterException, Parameters}
+
+/**
+  * Created by asyd on 09/01/17.
+  */
+
+object HDFSClientCLI {
+  def main(args: Array[String]) {
+    //    var hdfsClient = new HDFSClient(args)
+    val parameters = new CommonParameters
+    // Don't ask me why, but new JCommander(parameters) doesn't work
+    val jCommander = new JCommander()
+    jCommander.addObject(parameters)
+
+    var commandLs = new CommandLs
+    var commandFind = new CommandFind
+
+    jCommander.addCommand("ls", commandLs)
+    jCommander.addCommand("find", commandFind)
+
+    try {
+      jCommander.parse(args: _*)
+
+    } catch {
+      case _: ParameterException => jCommander.usage()
+    }
+  }
+}
+
+//class HelloParameters {
+//  @Parameter(names = Array("--hdfsURL"), required = true)
+//  var hdfsURL: String = null
+//}
+//
+class CommonParameters {
+  @Parameter(names = Array("-v"), description = "Increase verbosity")
+  val verbose: Boolean = false
+}
+
+@Parameters(commandDescription = "List directory content")
+class CommandLs {
+  @Parameter(required = false)
+  val path: String = "/"
+}
+
+@Parameters(commandDescription = "Search for files in a directory hierarchy")
+class CommandFind {
+  @Parameter(required = false)
+  val path: String = "/"
+}
+
+//class HDFSClient(args: Array[String]) {
+//  // See http://stackoverflow.com/questions/35779151/merging-multiple-typesafe-config-files-and-resolving-only-after-they-are-all-mer
+//  val defaultConfig = ConfigFactory.parseResources("defaults.conf")
+//  // TODO: Check if file exist, otherwise run the setup or display a link
+//  val siteConfig = ConfigFactory.parseFile(new File(sys.env("HOME") + "/.config/hdfsclient.conf"))
+//  val config = siteConfig.withFallback(defaultConfig).resolve()
+//  val settings = new Settings(config)
+//
+//  println("===== HDFS Settings =====")
+//  println("\thdfs.url       " + settings.hdfsURL)
+//  println("\thdfs.security  " + settings.hdfsSecurity)
+//
+//  if (settings.hdfsSecurity == "kerberos") {
+//    println("\t\thdfs.keytab    " + settings.hdfsKeytab)
+//    println("\t\thdfs.principal " + settings.hdfsPrincipal)
+//  } else {
+//    println("\t\thdfs.user      " + settings.hdfsUser)
+//    System.setProperty("HADOOP_USER_NAME", settings.hdfsUser)
+//  }
+//
+//  val hdfsConfiguration = new Configuration()
+//  hdfsConfiguration.set("fs.defaultFS", settings.hdfsURL)
+//
+//  val hdfs = FileSystem.get(hdfsConfiguration)
+//  try {
+//    def printEntry(entry: FileStatus): Unit = {
+//      if (entry.isDirectory)
+//        print("d")
+//      else
+//        print("-")
+//      print(entry.getPermission + " ")
+//      print(entry.getOwner + " ")
+//      print(entry.getGroup + " ")
+//      print(entry.getPath.toString.replaceFirst(s"^${settings.hdfsURL}/", ""))
+//      println()
+//    }
+//
+//    val path = new Path("/")
+//    hdfs.listStatus(path).foreach((x: FileStatus) => printEntry(x))
+//  } catch {
+//    case e: Exception => println(e)
+//  }
+//
+//}
