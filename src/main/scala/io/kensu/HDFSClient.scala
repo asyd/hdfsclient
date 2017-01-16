@@ -12,9 +12,7 @@ import org.apache.hadoop.fs.{FileStatus, FileSystem, Path}
   */
 
 class HDFSClient(commonParameters: CommonParameters) {
-
-
-  lazy val settings = {
+  val settings = {
     // See http://stackoverflow.com/questions/35779151/merging-multiple-typesafe-config-files-and-resolving-only-after-they-are-all-mer
     val defaultConfig = ConfigFactory.parseResources("defaults.conf")
     // TODO: Check if file exist, otherwise run the setup or display a link
@@ -26,19 +24,19 @@ class HDFSClient(commonParameters: CommonParameters) {
   if (commonParameters.verbose) {
 
     println("===== HDFS Settings =====")
-    println("\thdfs.url       " + settings.hdfsURL)
-    println("\thdfs.security  " + settings.hdfsSecurity)
+    println("hdfs.url       " + settings.hdfsURL)
+    println("hdfs.security  " + settings.hdfsSecurity)
 
     if (settings.hdfsSecurity == "kerberos") {
-      println("\t\thdfs.keytab    " + settings.hdfsKeytab)
-      println("\t\thdfs.principal " + settings.hdfsPrincipal)
+      println("hdfs.keytab    " + settings.hdfsKeytab)
+      println("hdfs.principal " + settings.hdfsPrincipal)
     } else {
-      println("\t\thdfs.user      " + settings.hdfsUser)
+      println("hdfs.user      " + settings.hdfsUser)
       System.setProperty("HADOOP_USER_NAME", settings.hdfsUser)
     }
   }
 
-  def printEntry(entry: FileStatus): Unit = {
+  def printEntry(entry: FileStatus, path: String): Unit = {
     if (entry.isDirectory)
       print("d")
     else
@@ -46,7 +44,7 @@ class HDFSClient(commonParameters: CommonParameters) {
     print(entry.getPermission + " ")
     print(entry.getOwner + " ")
     print(entry.getGroup + " ")
-    print(entry.getPath.toString.replaceFirst(s"^${settings.hdfsURL}", ""))
+    print(entry.getPath.toString.replaceFirst(s"^${settings.hdfsURL}${path}/?", ""))
     println()
   }
 
@@ -58,7 +56,7 @@ class HDFSClient(commonParameters: CommonParameters) {
     try {
       println(path + ":")
       val hdfsPath = new Path(path)
-      hdfs.listStatus(hdfsPath).foreach((x: FileStatus) => printEntry(x))
+      hdfs.listStatus(hdfsPath).foreach((x: FileStatus) => printEntry(x, path))
     } catch {
       case e: Exception => println(e)
     }
