@@ -14,10 +14,10 @@ object HDFSClientCLI {
     val jCommander = new JCommander()
     jCommander.addObject(parameters)
 
-    var commandLs = new CommandLs
-    var commandFind = new CommandFind
-
+    val commandLs:CommandLs = new CommandLs
     jCommander.addCommand("ls", commandLs)
+
+    val commandFind:CommandFind = new CommandFind
     jCommander.addCommand("find", commandFind)
 
     try {
@@ -29,26 +29,24 @@ object HDFSClientCLI {
   }
 }
 
-//class HelloParameters {
-//  @Parameter(names = Array("--hdfsURL"), required = true)
-//  var hdfsURL: String = null
-//}
-//
 class CommonParameters {
   @Parameter(names = Array("-v"), description = "Increase verbosity")
-  val verbose: Boolean = false
+  var verbose: Boolean = false
+
+  @Parameter(names = Array("--hdfsURL"), required = false)
+  var hdfsURL: String = null
 }
 
 @Parameters(commandDescription = "List directory content")
 class CommandLs {
   @Parameter(required = false)
-  val path: String = "/"
+  var path: String = "/"
 }
 
 @Parameters(commandDescription = "Search for files in a directory hierarchy")
 class CommandFind {
   @Parameter(required = false)
-  val path: String = "/"
+  var path: String = "/"
 }
 
 //class HDFSClient(args: Array[String]) {
