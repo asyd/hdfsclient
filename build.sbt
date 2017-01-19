@@ -5,6 +5,7 @@ version := "1.0"
 scalaVersion := "2.12.1"
 
 mainClass := Some("io.kensu.HDFSCli")
+mainClass in(Compile, run) := Some("io.kensu.HDFSCli")
 
 libraryDependencies ++= Seq(
   "com.typesafe" % "config" % "1.3.1",
