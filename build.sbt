@@ -4,13 +4,12 @@ version := "1.0"
 
 scalaVersion := "2.12.1"
 
-mainClass in(Compile, run) := Some("io.kensu.HDFSCli")
+mainClass := Some("io.kensu.HDFSCli")
 
 libraryDependencies ++= Seq(
   "com.typesafe" % "config" % "1.3.1",
   "org.apache.hadoop" % "hadoop-client" % "2.7.0",
   "com.beust" % "jcommander" % "1.58",
-//  "org.scalaj" % "scalaj-time_2.11" % "0.8"
   "com.github.nscala-time" %% "nscala-time" % "2.16.0"
 )
 
