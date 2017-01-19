@@ -2,9 +2,12 @@ package io.kensu
 
 import java.io.File
 
+import com.github.nscala_time.time.Imports._
 import com.typesafe.config.ConfigFactory
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FileStatus, FileSystem, Path}
+
+import scala.collection.mutable
 
 
 /**
@@ -36,7 +39,13 @@ class HDFSClient(commonParameters: CommonParameters) {
     }
   }
 
-  def printEntry(entry: FileStatus, path: String): Unit = {
+
+  def printEntry(entry: FileStatus) = {
+    val path = entry.getPath
+    def printDate(date: Long): String = {
+      new DateTime(date).toString("YYYY-MM-dd HH:mm")
+    }
+
     if (entry.isDirectory)
       print("d")
     else
@@ -44,21 +53,45 @@ class HDFSClient(commonParameters: CommonParameters) {
     print(entry.getPermission + " ")
     print(entry.getOwner + " ")
     print(entry.getGroup + " ")
-    print(entry.getPath.toString.replaceFirst(s"^${settings.hdfsURL}${path}/?", ""))
+    print(printDate(entry.getModificationTime) + " ")
+    print(entry.getPath.toString.replaceFirst(s"^${settings.hdfsURL}", ""))
     println()
   }
 
-  def ls(path: String) {
-    val hdfsConfiguration = new Configuration()
-    hdfsConfiguration.set("fs.defaultFS", settings.hdfsURL)
+  def find(args: CommandFind): Unit = {
 
-    val hdfs = FileSystem.get(hdfsConfiguration)
+  }
+
+  def readdir(hdfs: FileSystem, path: String, recurse: Boolean, callback: (FileStatus) => Unit) {
+    val dirs = new mutable.Queue[FileStatus]
+    val files = new mutable.Queue[FileStatus]
+    if (recurse)
+      println(s"${path}:")
     try {
-      println(path + ":")
       val hdfsPath = new Path(path)
-      hdfs.listStatus(hdfsPath).foreach((x: FileStatus) => printEntry(x, path))
+      for (entry: FileStatus <- hdfs.listStatus(hdfsPath)) {
+        if (entry.isDirectory) {
+          dirs += entry
+        } else {
+          files += entry
+        }
+      }
+      dirs.foreach((entry:FileStatus) =>
+        callback(entry)
+      )
+      files.foreach((entry:FileStatus) =>
+        callback(entry)
+      )
     } catch {
       case e: Exception => println(e)
     }
+  }
+
+  def ls(args: CommandLs) {
+    val hdfsConfiguration = new Configuration()
+    hdfsConfiguration.set("fs.defaultFS", settings.hdfsURL)
+    val hdfs = FileSystem.get(hdfsConfiguration)
+
+    readdir(hdfs, args.path, args.recursive, printEntry)
   }
 }

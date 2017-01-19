@@ -24,7 +24,8 @@ object CommandLineInterface {
       jCommander.parseWithoutValidation(args: _*)
       val hdfsClient = new HDFSClient(parameters)
       jCommander.getParsedCommand match {
-        case "ls" => hdfsClient.ls(commandLs.path)
+        case "ls" => hdfsClient.ls(commandLs)
+        case "find" => hdfsClient.find(commandFind)
       }
     } catch {
       case _: ParameterException => jCommander.usage()
@@ -44,11 +45,14 @@ class CommonParameters {
 class CommandLs {
   @Parameter(names = Array("--path"), required = false)
   var path: String = "/"
+
+  @Parameter(names = Array("-R"), required = false)
+  var recursive: Boolean = false
 }
 
 @Parameters(commandDescription = "Search for files in a directory hierarchy")
 class CommandFind {
-  @Parameter(required = false)
+  @Parameter(required = true)
   var path: String = "/"
 }
 
