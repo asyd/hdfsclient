@@ -6,7 +6,7 @@ import com.beust.jcommander.{JCommander, Parameter, ParameterException, Paramete
   * Created by asyd on 09/01/17.
   */
 
-object CommandLineInterface {
+object HDFSCli {
   def main(args: Array[String]) {
     //    var hdfsClient = new HDFSClient(args)
     val parameters = new CommonParameters

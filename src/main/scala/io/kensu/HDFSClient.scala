@@ -39,9 +39,13 @@ class HDFSClient(commonParameters: CommonParameters) {
     }
   }
 
+  def formatEntryPath(entry: FileStatus): String = {
+    return entry.getPath.toString.replaceFirst(s"^${settings.hdfsURL}", "")
+  }
 
   def printEntry(entry: FileStatus) = {
     val path = entry.getPath
+
     def printDate(date: Long): String = {
       new DateTime(date).toString("YYYY-MM-dd HH:mm")
     }
@@ -54,9 +58,10 @@ class HDFSClient(commonParameters: CommonParameters) {
     print(entry.getOwner + " ")
     print(entry.getGroup + " ")
     print(printDate(entry.getModificationTime) + " ")
-    print(entry.getPath.toString.replaceFirst(s"^${settings.hdfsURL}", ""))
+    print(formatEntryPath(entry) + " ")
     println()
   }
+
 
   def find(args: CommandFind): Unit = {
 
@@ -76,12 +81,20 @@ class HDFSClient(commonParameters: CommonParameters) {
           files += entry
         }
       }
-      dirs.foreach((entry:FileStatus) =>
+      /* Display directories first */
+      dirs.foreach((entry: FileStatus) =>
         callback(entry)
       )
-      files.foreach((entry:FileStatus) =>
+      /* Then files */
+      files.foreach((entry: FileStatus) =>
         callback(entry)
       )
+      if (recurse) {
+        println()
+        dirs.foreach((entry: FileStatus) =>
+          readdir(hdfs, formatEntryPath(entry), recurse, callback)
+        )
+      }
     } catch {
       case e: Exception => println(e)
     }
