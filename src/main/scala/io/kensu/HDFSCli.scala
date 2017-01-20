@@ -46,7 +46,7 @@ class CommandLs {
   @Parameter(names = Array("--path"), required = false)
   var path: String = "/"
 
-  @Parameter(names = Array("-R"), required = false)
+  @Parameter(names = Array("-R"), required = false, description = "List subdirectories recursively")
   var recursive: Boolean = false
 }
 
