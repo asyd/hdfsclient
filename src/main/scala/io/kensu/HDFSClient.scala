@@ -38,6 +38,7 @@ class HDFSClient(commonParameters: CommonParameters) {
         println("hdfs.user      " + settings.hdfsUser)
         System.setProperty("HADOOP_USER_NAME", settings.hdfsUser)
       }
+      println()
     }
 
     val hdfsConfiguration = new Configuration()
