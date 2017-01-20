@@ -52,7 +52,10 @@ class CommandLs {
 
 @Parameters(commandDescription = "Search for files in a directory hierarchy")
 class CommandFind {
-  @Parameter(required = true)
+  @Parameter(names = Array("--path"), required = false)
   var path: String = "/"
+
+  @Parameter(names = Array("--dry-run"), required = false)
+  var dryRun: Boolean = true
 }
 

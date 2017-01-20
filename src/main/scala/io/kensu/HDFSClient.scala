@@ -24,19 +24,25 @@ class HDFSClient(commonParameters: CommonParameters) {
     new Settings(config)
   }
 
-  if (commonParameters.verbose) {
+  val hdfs = {
+    if (commonParameters.verbose) {
 
-    println("===== HDFS Settings =====")
-    println("hdfs.url       " + settings.hdfsURL)
-    println("hdfs.security  " + settings.hdfsSecurity)
+      println("===== HDFS Settings =====")
+      println("hdfs.url       " + settings.hdfsURL)
+      println("hdfs.security  " + settings.hdfsSecurity)
 
-    if (settings.hdfsSecurity == "kerberos") {
-      println("hdfs.keytab    " + settings.hdfsKeytab)
-      println("hdfs.principal " + settings.hdfsPrincipal)
-    } else {
-      println("hdfs.user      " + settings.hdfsUser)
-      System.setProperty("HADOOP_USER_NAME", settings.hdfsUser)
+      if (settings.hdfsSecurity == "kerberos") {
+        println("hdfs.keytab    " + settings.hdfsKeytab)
+        println("hdfs.principal " + settings.hdfsPrincipal)
+      } else {
+        println("hdfs.user      " + settings.hdfsUser)
+        System.setProperty("HADOOP_USER_NAME", settings.hdfsUser)
+      }
     }
+
+    val hdfsConfiguration = new Configuration()
+    hdfsConfiguration.set("fs.defaultFS", settings.hdfsURL)
+    FileSystem.get(hdfsConfiguration)
   }
 
   def formatEntryPath(entry: FileStatus): String = {
@@ -101,10 +107,6 @@ class HDFSClient(commonParameters: CommonParameters) {
   }
 
   def ls(args: CommandLs) {
-    val hdfsConfiguration = new Configuration()
-    hdfsConfiguration.set("fs.defaultFS", settings.hdfsURL)
-    val hdfs = FileSystem.get(hdfsConfiguration)
-
     readdir(hdfs, args.path, args.recursive, printEntry)
   }
 }
