@@ -8,24 +8,34 @@ case class Arguments(verbose: Boolean = false,
                      hdfsURL: String = "",
                      path: String = "/",
                      recursive: Boolean = false,
-                     command: String = "ls"
+                     command: String = "ls",
+                     paths: Seq[String] = Seq("/")
                     )
 
 
 object ArgParse {
-  val parser = new scopt.OptionParser[Arguments]("scopt") {
+  val parser = new scopt.OptionParser[Arguments]("hdfscli") {
     head("HDFS Client", "0.0.1")
-    opt[Unit]('v', "verbose").action((_, c) => c.copy(verbose = true)).text("Increase verbosity")
-    opt[String]("hdfsURL").action((x, c) => c.copy(hdfsURL = x)).text("HDFS URL")
+    opt[Unit]('v', "verbose").action((_, c) =>
+      c.copy(verbose = true)).text("Increase verbosity")
+
+    opt[String]("hdfsURL").action((x, c) =>
+      c.copy(hdfsURL = x)).text("HDFS URL")
+
+
     help("help").text("Display help")
 
     cmd("ls").action((_, c) => c.copy(command = "ls"))
       .text("Display files and directories")
       .children(
-        opt[Unit]('R', "recurse").action((_, c) => c.copy(recursive = true)).text("Recurse")
+        opt[Unit]('R', "recurse").action((_, c) => c.copy(recursive = true)).text("Recurse"),
+        arg[String]("<path>...").unbounded().optional().action((x, c) =>
+          /* TODO: replace paths if provided */
+          c.copy(paths = c.paths :+ x)).text("paths")
       )
+
     cmd("find").action((_, c) => c.copy(command = "find"))
-      .text("Display files and directories")
+      .text("Find files and directories and perform action")
       .children(
         opt[Unit]('R', "recurse").action((_, c) => c.copy(recursive = true)).text("Recurse")
       )
@@ -39,7 +49,9 @@ object ArgParse {
         if (config.verbose)
           client.displaySettings
         config.command match {
-          case "ls" => client.ls(config.path, config.recursive)
+          case "ls" => {
+            config.paths.foreach(client.ls(_, config.recursive))
+          }
           case "find" => client.find()
         }
       }

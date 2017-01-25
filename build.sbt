@@ -4,7 +4,7 @@ version := "1.0"
 
 scalaVersion := "2.12.1"
 
-mainClass := Some("io.kensu.HDFSCli")
+mainClass := Some("io.kensu.ArgParse")
 mainClass in(Compile, run) := Some("io.kensu.ArgParse")
 
 libraryDependencies ++= Seq(

@@ -72,8 +72,7 @@ class HDFSClient() {
   def readdir(hdfs: FileSystem, path: String, recurse: Boolean, callback: (FileStatus) => Unit) {
     val dirs = new mutable.Queue[FileStatus]
     val files = new mutable.Queue[FileStatus]
-    if (recurse)
-      println(s"${path}:")
+
     try {
       val hdfsPath = new Path(path)
       for (entry: FileStatus <- hdfs.listStatus(hdfsPath)) {
@@ -107,6 +106,7 @@ class HDFSClient() {
   }
 
   def ls(path: String, recursive: Boolean) {
+    println(s"${path}:")
     readdir(hdfs, path, recursive, printEntry)
   }
 }
