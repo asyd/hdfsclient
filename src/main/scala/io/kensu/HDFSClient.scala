@@ -14,7 +14,7 @@ import scala.collection.mutable
   * Created by asyd on 16/01/17.
   */
 
-class HDFSClient(commonParameters: CommonParameters) {
+class HDFSClient() {
   val settings = {
     // See http://stackoverflow.com/questions/35779151/merging-multiple-typesafe-config-files-and-resolving-only-after-they-are-all-mer
     val defaultConfig = ConfigFactory.parseResources("defaults.conf")
@@ -25,26 +25,26 @@ class HDFSClient(commonParameters: CommonParameters) {
   }
 
   val hdfs = {
-    if (commonParameters.verbose) {
-
-      println("===== HDFS Settings =====")
-      println("hdfs.url       " + settings.hdfsURL)
-      println("hdfs.security  " + settings.hdfsSecurity)
-
-      if (settings.hdfsSecurity == "kerberos") {
-        println("hdfs.keytab    " + settings.hdfsKeytab)
-        println("hdfs.principal " + settings.hdfsPrincipal)
-      } else {
-        println("hdfs.user      " + settings.hdfsUser)
-        System.setProperty("HADOOP_USER_NAME", settings.hdfsUser)
-      }
-      println()
-    }
-
     val hdfsConfiguration = new Configuration()
     hdfsConfiguration.set("fs.defaultFS", settings.hdfsURL)
     FileSystem.get(hdfsConfiguration)
   }
+
+  def displaySettings: Unit = {
+    println("===== HDFS Settings =====")
+    println("hdfs.url       " + settings.hdfsURL)
+    println("hdfs.security  " + settings.hdfsSecurity)
+
+    if (settings.hdfsSecurity == "kerberos") {
+      println("hdfs.keytab    " + settings.hdfsKeytab)
+      println("hdfs.principal " + settings.hdfsPrincipal)
+    } else {
+      println("hdfs.user      " + settings.hdfsUser)
+      System.setProperty("HADOOP_USER_NAME", settings.hdfsUser)
+    }
+    println()
+  }
+
 
   def formatEntryPath(entry: FileStatus): String = {
     return entry.getPath.toString.replaceFirst(s"^${settings.hdfsURL}", "")
@@ -67,11 +67,6 @@ class HDFSClient(commonParameters: CommonParameters) {
     print(printDate(entry.getModificationTime) + " ")
     print(formatEntryPath(entry) + " ")
     println()
-  }
-
-
-  def find(args: CommandFind): Unit = {
-
   }
 
   def readdir(hdfs: FileSystem, path: String, recurse: Boolean, callback: (FileStatus) => Unit) {
@@ -107,7 +102,11 @@ class HDFSClient(commonParameters: CommonParameters) {
     }
   }
 
-  def ls(args: CommandLs) {
-    readdir(hdfs, args.path, args.recursive, printEntry)
+  def find(): Unit = {
+    println("yeah")
+  }
+
+  def ls(path: String, recursive: Boolean) {
+    readdir(hdfs, path, recursive, printEntry)
   }
 }

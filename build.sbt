@@ -5,13 +5,14 @@ version := "1.0"
 scalaVersion := "2.12.1"
 
 mainClass := Some("io.kensu.HDFSCli")
-mainClass in(Compile, run) := Some("io.kensu.HDFSCli")
+mainClass in(Compile, run) := Some("io.kensu.ArgParse")
 
 libraryDependencies ++= Seq(
   "com.typesafe" % "config" % "1.3.1",
   "org.apache.hadoop" % "hadoop-client" % "2.7.0",
   "com.beust" % "jcommander" % "1.58",
-  "com.github.nscala-time" %% "nscala-time" % "2.16.0"
+  "com.github.scopt" % "scopt_2.12" % "3.5.0",
+  "com.github.nscala-time" % "nscala-time_2.12" % "2.16.0"
 )
 
 assemblyMergeStrategy in assembly := {
