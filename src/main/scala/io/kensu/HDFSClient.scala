@@ -7,9 +7,6 @@ import com.typesafe.config.ConfigFactory
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FileStatus, FileSystem, Path}
 
-import scala.collection.mutable
-
-
 /**
   * Created by asyd on 16/01/17.
   */
@@ -51,8 +48,6 @@ class HDFSClient() {
   }
 
   def printEntry(entry: FileStatus) = {
-    val path = entry.getPath
-
     def printDate(date: Long): String = {
       new DateTime(date).toString("YYYY-MM-dd HH:mm")
     }

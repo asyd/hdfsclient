@@ -5,8 +5,6 @@ package io.kensu
   */
 
 case class Arguments(verbose: Boolean = false,
-                     hdfsURL: String = "",
-                     path: String = "/",
                      recursive: Boolean = false,
                      command: String = "ls",
                      paths: Seq[String] = Seq("/")
@@ -18,10 +16,6 @@ object ArgParse {
     head("HDFS Client", "0.0.1")
     opt[Unit]('v', "verbose").action((_, c) =>
       c.copy(verbose = true)).text("Increase verbosity")
-
-    opt[String]("hdfsURL").action((x, c) =>
-      c.copy(hdfsURL = x)).text("HDFS URL")
-
 
     help("help").text("Display help")
 
