@@ -70,26 +70,16 @@ class HDFSClient() {
   }
 
   def readdir(hdfs: FileSystem, path: String, recurse: Boolean, callback: (FileStatus) => Unit) {
-    val dirs = new mutable.Queue[FileStatus]
-    val files = new mutable.Queue[FileStatus]
-
     try {
       val hdfsPath = new Path(path)
-      for (entry: FileStatus <- hdfs.listStatus(hdfsPath)) {
-        if (entry.isDirectory) {
-          dirs += entry
-        } else {
-          files += entry
-        }
-      }
+      val dirs = hdfs.listStatus(hdfsPath).filter(_.isDirectory)
+      val files = hdfs.listStatus(hdfsPath).filter(!_.isDirectory)
+
       /* Display directories first */
-      dirs.foreach((entry: FileStatus) =>
-        callback(entry)
-      )
+      dirs.foreach((entry: FileStatus) => callback(entry))
       /* Then files */
-      files.foreach((entry: FileStatus) =>
-        callback(entry)
-      )
+      files.foreach((entry: FileStatus) => callback(entry))
+
       if (recurse) {
         println()
         dirs.foreach((entry: FileStatus) =>
